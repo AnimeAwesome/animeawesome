@@ -1,0 +1,237 @@
+<html><head><base href="https://animeawesome.com/anime/55791">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeAwesome - Anime Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #ff6b6b;
+            color: #0a0a0a;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(255,107,107,0.5);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        nav {
+            background-color: #1a1a1a;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #ff6b6b;
+        }
+        .anime-details {
+            display: flex;
+            margin-top: 30px;
+        }
+        .anime-cover {
+            flex: 0 0 300px;
+            margin-right: 30px;
+        }
+        .anime-cover img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+        }
+        .anime-info {
+            flex: 1;
+        }
+        h2 {
+            color: #ff6b6b;
+            border-bottom: 2px solid #ff6b6b;
+            padding-bottom: 10px;
+        }
+        .info-item {
+            margin-bottom: 15px;
+        }
+        .info-item strong {
+            color: #ff6b6b;
+        }
+        .characters {
+            margin-top: 30px;
+        }
+        .character-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .character-item {
+            flex: 0 0 calc(20% - 20px);
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        }
+        .character-item img {
+            width: 100%;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .episodes {
+            margin-top: 30px;
+        }
+        .episode-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .episode-item {
+            background-color: #1a1a1a;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        footer {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AnimeAwesome</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="https://animeawesome.com/">Home</a></li>
+            <li><a href="https://animeawesome.com/genres">Genres</a></li>
+            <li><a href="https://animeawesome.com/schedule">Schedule</a></li>
+            <li><a href="https://animeawesome.com/news">News</a></li>
+            <li><a href="https://animeawesome.com/forum">Forum</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div id="anime-details" class="anime-details">
+            <!-- Anime details will be populated here -->
+        </div>
+        <div id="characters" class="characters">
+            <h2>Characters</h2>
+            <div id="character-list" class="character-list">
+                <!-- Character list will be populated here -->
+            </div>
+        </div>
+        <div id="episodes" class="episodes">
+            <h2>Episodes</h2>
+            <ul id="episode-list" class="episode-list">
+                <!-- Episode list will be populated here -->
+            </ul>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2023 AnimeAwesome. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const animeId = 55791; // This should be dynamically set based on the URL
+            fetchAnimeDetails(animeId);
+            fetchAnimeCharacters(animeId);
+            fetchAnimeEpisodes(animeId);
+        });
+
+        function fetchAnimeDetails(animeId) {
+            fetch(`https://api.jikan.moe/v4/anime/${animeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const anime = data.data;
+                    const detailsContainer = document.getElementById('anime-details');
+                    detailsContainer.innerHTML = `
+                        <div class="anime-cover">
+                            <img src="${anime.images.jpg.large_image_url}" alt="Cover for ${anime.title}">
+                        </div>
+                        <div class="anime-info">
+                            <h2>${anime.title}</h2>
+                            <div class="info-item"><strong>Japanese Title:</strong> ${anime.title_japanese}</div>
+                            <div class="info-item"><strong>Type:</strong> ${anime.type}</div>
+                            <div class="info-item"><strong>Episodes:</strong> ${anime.episodes || 'Unknown'}</div>
+                            <div class="info-item"><strong>Status:</strong> ${anime.status}</div>
+                            <div class="info-item"><strong>Aired:</strong> ${anime.aired.string}</div>
+                            <div class="info-item"><strong>Genre:</strong> ${anime.genres.map(genre => genre.name).join(', ')}</div>
+                            <div class="info-item"><strong>Synopsis:</strong> ${anime.synopsis}</div>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error fetching anime details:', error);
+                });
+        }
+
+        function fetchAnimeCharacters(animeId) {
+            fetch(`https://api.jikan.moe/v4/anime/${animeId}/characters`)
+                .then(response => response.json())
+                .then(data => {
+                    const characters = data.data;
+                    const characterListContainer = document.getElementById('character-list');
+                    characters.forEach(character => {
+                        const characterElement = document.createElement('div');
+                        characterElement.className = 'character-item';
+                        characterElement.innerHTML = `
+                            <img src="${character.character.images.jpg.image_url}" alt="${character.character.name}">
+                            <div>${character.character.name}</div>
+                            <div>${character.role}</div>
+                        `;
+                        characterListContainer.appendChild(characterElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching anime characters:', error);
+                });
+        }
+
+        function fetchAnimeEpisodes(animeId) {
+            fetch(`https://api.jikan.moe/v4/anime/${animeId}/episodes`)
+                .then(response => response.json())
+                .then(data => {
+                    const episodes = data.data;
+                    const episodeListContainer = document.getElementById('episode-list');
+                    episodes.forEach(episode => {
+                        const episodeElement = document.createElement('li');
+                        episodeElement.className = 'episode-item';
+                        episodeElement.innerHTML = `
+                            <strong>Episode ${episode.mal_id}:</strong> ${episode.title}
+                            ${episode.filler ? ' (Filler)' : ''}
+                            ${episode.recap ? ' (Recap)' : ''}
+                        `;
+                        episodeListContainer.appendChild(episodeElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching anime episodes:', error);
+                });
+        }
+    </script>
+</body>
+</html>
