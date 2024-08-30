@@ -142,7 +142,7 @@
                     <p>${genre.description}</p>
                 `;
                 card.addEventListener('click', () => {
-                    window.location.href = `https://animeawesome.com/genres/${genre.name.toLowerCase()}`;
+                    window.location.href = `https://animeawesome.com/genres/${genre.name.toLowerCase().replace(/ /g, '-')}`;
                 });
                 genreGrid.appendChild(card);
             });
