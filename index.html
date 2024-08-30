@@ -1,0 +1,234 @@
+<html><head><base href="https://animeawesome.com/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeAwesome - Your Ultimate Anime Hub</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .column {
+            flex: 1;
+            padding: 10px;
+        }
+        .middle-column {
+            flex: 2;
+            margin: 0 40px;
+        }
+        h2 {
+            color: #ff6b6b;
+            border-bottom: 2px solid #ff6b6b;
+            padding-bottom: 10px;
+        }
+        .anime-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .anime-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+        }
+        .anime-cover {
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px 0 0 5px;
+        }
+        .anime-title {
+            padding: 10px;
+            font-weight: bold;
+        }
+        .current-season {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .current-season .anime-item {
+            width: calc(25% - 15px);
+            flex-direction: column;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-season .anime-cover {
+            width: 100%;
+            height: 200px;
+            border-radius: 5px 5px 0 0;
+        }
+        header {
+            background-color: #ff6b6b;
+            color: #0a0a0a;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(255,107,107,0.5);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        nav {
+            background-color: #1a1a1a;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #ff6b6b;
+        }
+        footer {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AnimeAwesome</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="https://animeawesome.com/">Home</a></li>
+            <li><a href="https://animeawesome.com/genres">Genres</a></li>
+            <li><a href="https://animeawesome.com/schedule">Schedule</a></li>
+            <li><a href="https://animeawesome.com/news">News</a></li>
+            <li><a href="https://animeawesome.com/forum">Forum</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="column">
+            <h2>Top 10 Anime of the Year</h2>
+            <div id="top-year"></div>
+        </div>
+        <div class="column middle-column">
+            <h2>Current Season Anime</h2>
+            <div id="current-season" class="current-season"></div>
+        </div>
+        <div class="column">
+            <h2>Top 5 Anime of the Season</h2>
+            <div id="top-season"></div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2023 AnimeAwesome. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchTopAnimeOfYear();
+            fetchCurrentSeasonAnime();
+            fetchTopAnimeOfSeason();
+        });
+
+        function fetchTopAnimeOfYear() {
+            const currentYear = new Date().getFullYear();
+            fetch(`https://api.jikan.moe/v4/seasons/${currentYear}/now?filter=tv&order_by=score&sort=desc&limit=10`)
+                .then(response => response.json())
+                .then(data => {
+                    const animeList = data.data;
+                    const topYearContainer = document.getElementById('top-year');
+                    displayAnimeList(animeList, topYearContainer);
+                })
+                .catch(error => {
+                    console.error('Error fetching top anime of the year:', error);
+                });
+        }
+
+        function fetchCurrentSeasonAnime() {
+            fetch('https://api.jikan.moe/v4/seasons/now?filter=tv')
+                .then(response => response.json())
+                .then(data => {
+                    const animeList = data.data;
+                    const currentSeasonContainer = document.getElementById('current-season');
+                    displayAnimeList(animeList, currentSeasonContainer, true);
+                })
+                .catch(error => {
+                    console.error('Error fetching current season anime:', error);
+                });
+        }
+
+        function fetchTopAnimeOfSeason() {
+            fetch('https://api.jikan.moe/v4/seasons/now?filter=tv&order_by=score&sort=desc&limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    const animeList = data.data;
+                    const topSeasonContainer = document.getElementById('top-season');
+                    displayAnimeList(animeList, topSeasonContainer);
+                })
+                .catch(error => {
+                    console.error('Error fetching top anime of the season:', error);
+                });
+        }
+
+        function displayAnimeList(animeList, container, isCurrentSeason = false) {
+            container.innerHTML = '';
+            animeList.forEach(anime => {
+                const animeItem = document.createElement('div');
+                animeItem.className = 'anime-item';
+                animeItem.innerHTML = `
+                    <img class="anime-cover" src="${anime.images.jpg.image_url}" alt="Anime cover for ${anime.title}" width="100" height="150">
+                    <div>
+                        <span class="anime-title">${anime.title}</span>
+                    </div>
+                `;
+                animeItem.addEventListener('click', () => navigateToAnimePage(anime.mal_id));
+                container.appendChild(animeItem);
+            });
+
+            if (isCurrentSeason) {
+                container.querySelectorAll('.anime-item').forEach(item => {
+                    item.style.width = 'calc(25% - 15px)';
+                    item.style.flexDirection = 'column';
+                    item.style.textAlign = 'center';
+                });
+            }
+
+            // Add hover effect
+            const animeItems = container.querySelectorAll('.anime-item');
+            animeItems.forEach(item => {
+                item.addEventListener('mouseover', function() {
+                    this.style.backgroundColor = '#2a2a2a';
+                });
+                item.addEventListener('mouseout', function() {
+                    this.style.backgroundColor = '#1a1a1a';
+                });
+            });
+        }
+
+        function navigateToAnimePage(animeId) {
+            window.location.href = `https://animeawesome.com/anime/${animeId}`;
+        }
+    </script>
+</body>
+</html>
