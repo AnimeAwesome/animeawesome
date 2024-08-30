@@ -156,10 +156,16 @@
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const animeId = 55791; // This should be dynamically set based on the URL
-            fetchAnimeDetails(animeId);
-            fetchAnimeCharacters(animeId);
-            fetchAnimeEpisodes(animeId);
+            const urlParams = new URLSearchParams(window.location.search);
+            const animeId = urlParams.get('id'); // Get the 'id' parameter from the URL
+
+            if (animeId) {
+                fetchAnimeDetails(animeId);
+                fetchAnimeCharacters(animeId);
+                fetchAnimeEpisodes(animeId);
+            } else {
+                console.error('No anime ID provided in the URL.');
+            }
         });
 
         function fetchAnimeDetails(animeId) {
