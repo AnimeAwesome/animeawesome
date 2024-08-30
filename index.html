@@ -122,9 +122,7 @@
         <ul>
             <li><a href="https://animeawesome.com/">Home</a></li>
             <li><a href="https://animeawesome.com/genres">Genres</a></li>
-            <li><a href="https://animeawesome.com/schedule">Schedule</a></li>
-            <li><a href="https://animeawesome.com/news">News</a></li>
-            <li><a href="https://animeawesome.com/forum">Forum</a></li>
+            <li><a href="https://animeawesome.com/search">search</a></li>
         </ul>
     </nav>
     <div class="container">
@@ -151,46 +149,62 @@
             fetchTopAnimeOfSeason();
         });
 
-        function fetchTopAnimeOfYear() {
-            const currentYear = new Date().getFullYear();
-            fetch(`https://api.jikan.moe/v4/seasons/${currentYear}/now?filter=tv&order_by=score&sort=desc&limit=10`)
-                .then(response => response.json())
-                .then(data => {
-                    const animeList = data.data;
-                    const topYearContainer = document.getElementById('top-year');
-                    displayAnimeList(animeList, topYearContainer);
-                })
-                .catch(error => {
-                    console.error('Error fetching top anime of the year:', error);
-                });
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
+    
+        async function fetchTopAnimeOfYear() {
+            const animeIds = [
+                55690, 52701, 52742, 52588, 56538, 49458, 57524, 57864, 55888, 55791 // Add more anime IDs here
+            ];
 
-        function fetchCurrentSeasonAnime() {
-            fetch('https://api.jikan.moe/v4/seasons/now?filter=tv')
-                .then(response => response.json())
-                .then(data => {
-                    const animeList = data.data;
-                    const currentSeasonContainer = document.getElementById('current-season');
-                    displayAnimeList(animeList, currentSeasonContainer, true);
-                })
-                .catch(error => {
-                    console.error('Error fetching current season anime:', error);
-                });
-        }
+            const fetchPromises = animeIds.map(async id => {
+                await delay(500); // 500 ms delay between requests
+                return fetch(`https://api.jikan.moe/v4/anime/${id}`)
+                    .then(response => response.json())
+                    .then(data => data.data);
+            });
 
-        function fetchTopAnimeOfSeason() {
-            fetch('https://api.jikan.moe/v4/seasons/now?filter=tv&order_by=score&sort=desc&limit=5')
-                .then(response => response.json())
-                .then(data => {
-                    const animeList = data.data;
-                    const topSeasonContainer = document.getElementById('top-season');
-                    displayAnimeList(animeList, topSeasonContainer);
-                })
-                .catch(error => {
-                    console.error('Error fetching top anime of the season:', error);
-                });
-        }
+            try {
+                const animeList = await Promise.all(fetchPromises);
+                const topYearContainer = document.getElementById('top-year');
+                displayAnimeList(animeList, topYearContainer);
+            } catch (error) {
+                console.error('Error fetching top anime of the year:', error);
+            }
+}
+    
+        async function fetchCurrentSeasonAnime() {
+            try {
+                await delay(500); // 500 ms delay before the request
+                const response = await fetch('https://api.jikan.moe/v4/seasons/now?filter=tv');
+                const data = await response.json();
+                const animeList = data.data;
+                const currentSeasonContainer = document.getElementById('current-season');
+                displayAnimeList(animeList, currentSeasonContainer, true);
+            } catch (error) {
+                console.error('Error fetching current season anime:', error);
+            }
+}
 
+    
+        async function fetchTopAnimeOfSeason() {
+            try {
+                await delay(1000); // 500 ms delay before the request
+                const response = await fetch('https://api.jikan.moe/v4/seasons/now?filter=tv&order_by=score&sort=desc&limit=20');
+                const data = await response.json();
+                const animeList = data.data
+                    .filter(anime => anime.score !== null)
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 5);
+                const topSeasonContainer = document.getElementById('top-season');
+                displayAnimeList(animeList, topSeasonContainer);
+            } catch (error) {
+                console.error('Error fetching top anime of the season:', error);
+            }
+}
+
+    
         function displayAnimeList(animeList, container, isCurrentSeason = false) {
             container.innerHTML = '';
             animeList.forEach(anime => {
@@ -205,7 +219,7 @@
                 animeItem.addEventListener('click', () => navigateToAnimePage(anime.mal_id));
                 container.appendChild(animeItem);
             });
-
+    
             if (isCurrentSeason) {
                 container.querySelectorAll('.anime-item').forEach(item => {
                     item.style.width = 'calc(25% - 15px)';
@@ -213,7 +227,7 @@
                     item.style.textAlign = 'center';
                 });
             }
-
+    
             // Add hover effect
             const animeItems = container.querySelectorAll('.anime-item');
             animeItems.forEach(item => {
@@ -225,10 +239,10 @@
                 });
             });
         }
-
+    
         function navigateToAnimePage(animeId) {
             window.location.href = `https://animeawesome.com/anime/${animeId}`;
         }
-    </script>
+    </script>    
 </body>
 </html>
