@@ -199,7 +199,7 @@
 
         async function loadPage(page) {
             document.getElementById('loading').style.display = 'block';
-            const { data: fantsyAnime, pagination } = await fetchFantasyAnime(page);
+            const { data: fantasyAnime, pagination } = await fetchFantasyAnime(page);
             createAnimeCards(fantasyAnime);
 
             const prevButton = document.getElementById('prevPage');
