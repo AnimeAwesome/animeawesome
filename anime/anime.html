@@ -343,7 +343,10 @@
                         <div class="anime-meta-item"><strong>Status:</strong> ${anime.status}</div>
                         <div class="anime-meta-item"><strong>Aired:</strong> ${anime.aired.string}</div>
                         <div class="anime-meta-item"><strong>Score:</strong> ${anime.score || 'N/A'}</div>
-                        <div class="anime-meta-item"><strong>Genres:</strong> ${anime.genres.map(genre => `<a href="https://animeawesome.com/genres/${genre.mal_id}" class="genre-link">${genre.name}</a>`).join(', ')}</div>
+                        <div class="anime-meta-item"><strong>Genres:</strong> ${anime.genres.map(genre => {
+                            const encodedGenreName = encodeURIComponent(genre.name); // Encode each genre name individually
+                            return `<a href="https://animeawesome.com/genre?genreId=${genre.mal_id}&genreTitle=${encodedGenreName}" class="genre-link">${genre.name}</a>`;
+                        }).join(', ')}</div>
                     </div>
                 </div>
             `;
