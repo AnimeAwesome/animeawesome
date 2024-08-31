@@ -304,6 +304,7 @@
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
             const animeId = urlParams.get('id'); //URL id
             fetchAnimeDetails(animeId);
             setupMobileMenu();
