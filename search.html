@@ -1,7 +1,7 @@
 <html><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnimeAwesome - Search Anime</title>
+    <title>AnimeAwesome - Advanced Anime Search</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -51,79 +51,84 @@
         nav ul li a:hover {
             color: #ff6b6b;
         }
-        h2 {
-            color: #ff6b6b;
-            border-bottom: 2px solid #ff6b6b;
-            padding-bottom: 10px;
-            margin-top: 30px;
-        }
         .search-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
         }
-        #search-input {
-            width: 60%;
+        .search-input, .filter-select {
+            width: 100%;
             padding: 10px;
+            margin-bottom: 10px;
             font-size: 1em;
             border: none;
-            border-radius: 5px 0 0 5px;
-            background-color: #1a1a1a;
+            border-radius: 5px;
+            background-color: #2a2a2a;
             color: #e0e0e0;
         }
-        #search-button {
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .filter-row .filter-select {
+            flex: 1;
+        }
+        .search-button {
+            width: 100%;
             padding: 10px 20px;
-            font-size: 1em;
+            font-size: 1.2em;
             background-color: #ff6b6b;
             color: #0a0a0a;
             border: none;
-            border-radius: 0 5px 5px 0;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        #search-button:hover {
-            background-color: #ff8f8f;
+        .search-button:hover {
+            background-color: #ff8c8c;
         }
-        #results-container {
-            margin-top: 30px;
+        .results-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
+            margin-top: 40px;
         }
         .anime-card {
             background-color: #1a1a1a;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
         .anime-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
         }
-        .anime-card img {
+        .anime-cover {
             width: 100%;
-            height: 280px;
+            height: 300px;
             object-fit: cover;
         }
-        .anime-card-info {
+        .anime-info {
             padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .anime-card-info h3 {
-            margin: 0 0 10px 0;
-            font-size: 1em;
+        .anime-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
             color: #ff6b6b;
         }
-        .anime-card-info p {
-            margin: 5px 0;
-            font-size: 0.8em;
-            color: #aaa;
-        }
-        #loading, #no-results {
-            text-align: center;
-            font-size: 1.2em;
-            margin-top: 50px;
-            display: none;
+        .anime-details {
+            font-size: 0.9em;
+            color: #b0b0b0;
+            flex-grow: 1;
         }
         footer {
             background-color: #1a1a1a;
@@ -132,28 +137,134 @@
             padding: 20px 0;
             margin-top: 40px;
         }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #0a0a0a;
+            font-size: 24px;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .pagination-button {
+            background-color: #ff6b6b;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .pagination-button:hover {
+            background-color: #ff8c8c;
+        }
+        .pagination-button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        .page-info {
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+            }
+            .results-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            nav ul {
+                display: none;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            nav.active ul {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+            }
+            nav.active ul li {
+                margin: 10px 0;
+            }
+            .anime-cover {
+                height: 200px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>AnimeAwesome</h1>
+        <button class="mobile-menu-btn">☰</button>
     </header>
     <nav>
         <ul>
             <li><a href="https://animeawesome.com/">Home</a></li>
             <li><a href="https://animeawesome.com/genres">Genres</a></li>
-            <li><a href="https://animeawesome.com/search">Search</a></li>
+            <li><a href="https://animeawesome.com/schedule">Schedule</a></li>
+            <li><a href="https://animeawesome.com/news">News</a></li>
+            <li><a href="https://animeawesome.com/forum">Forum</a></li>
         </ul>
     </nav>
     <div class="container">
-        <h2>Search Anime</h2>
         <div class="search-container">
-            <input type="text" id="search-input" placeholder="Enter anime title...">
-            <button id="search-button">Search</button>
+            <input type="text" id="search-input" class="search-input" placeholder="Search for anime...">
+            <div class="filter-row">
+                <select id="type-filter" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="tv">TV</option>
+                    <option value="movie">Movie</option>
+                    <option value="ova">OVA</option>
+                    <option value="special">Special</option>
+                    <option value="ona">ONA</option>
+                    <option value="music">Music</option>
+                </select>
+                <select id="status-filter" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="airing">Airing</option>
+                    <option value="complete">Completed</option>
+                    <option value="upcoming">Upcoming</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <select id="rating-filter" class="filter-select">
+                    <option value="">All Ratings</option>
+                    <option value="g">G - All Ages</option>
+                    <option value="pg">PG - Children</option>
+                    <option value="pg13">PG-13 - Teens 13 or older</option>
+                    <option value="r17">R - 17+ (violence & profanity)</option>
+                    <option value="r">R+ - Mild Nudity</option>
+                </select>
+                <select id="order-filter" class="filter-select">
+                    <option value="">Sort By</option>
+                    <option value="title">Title</option>
+                    <option value="start_date">Start Date</option>
+                    <option value="end_date">End Date</option>
+                    <option value="score">Score</option>
+                    <option value="popularity">Popularity</option>
+                </select>
+            </div>
+            <button id="search-button" class="search-button">Search</button>
         </div>
-        <div id="loading">Searching...</div>
-        <div id="no-results">No results found. Try a different search term.</div>
-        <div id="results-container"></div>
+        <div id="results-container" class="results-container">
+            <!-- Search results will be dynamically added here -->
+        </div>
+        <div class="pagination">
+            <button id="prev-page" class="pagination-button" disabled>Previous</button>
+            <span class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+            <button id="next-page" class="pagination-button" disabled>Next</button>
+        </div>
     </div>
     <footer>
         <p>&copy; 2023 AnimeAwesome. All rights reserved.</p>
@@ -163,59 +274,126 @@
             const searchInput = document.getElementById('search-input');
             const searchButton = document.getElementById('search-button');
             const resultsContainer = document.getElementById('results-container');
-            const loadingElement = document.getElementById('loading');
-            const noResultsElement = document.getElementById('no-results');
+            const typeFilter = document.getElementById('type-filter');
+            const statusFilter = document.getElementById('status-filter');
+            const ratingFilter = document.getElementById('rating-filter');
+            const orderFilter = document.getElementById('order-filter');
+            const prevPageButton = document.getElementById('prev-page');
+            const nextPageButton = document.getElementById('next-page');
+            const currentPageSpan = document.getElementById('current-page');
+            const totalPagesSpan = document.getElementById('total-pages');
 
-            searchButton.addEventListener('click', performSearch);
+            let currentPage = 1;
+            let totalPages = 1;
+
+            searchButton.addEventListener('click', () => performSearch(1));
             searchInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    performSearch();
+                    performSearch(1);
                 }
             });
 
-            function performSearch() {
-                const query = searchInput.value.trim();
-                if (query) {
-                    loadingElement.style.display = 'block';
-                    noResultsElement.style.display = 'none';
-                    resultsContainer.innerHTML = '';
-
-                    fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw`)
-                        .then(response => response.json())
-                        .then(data => {
-                            loadingElement.style.display = 'none';
-                            if (data.data && data.data.length > 0) {
-                                displayResults(data.data);
-                            } else {
-                                noResultsElement.style.display = 'block';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching search results:', error);
-                            loadingElement.style.display = 'none';
-                            noResultsElement.textContent = 'An error occurred. Please try again.';
-                            noResultsElement.style.display = 'block';
-                        });
+            prevPageButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    performSearch(currentPage - 1);
+                    window.scrollTo(0, 0);
                 }
+            });
+
+            nextPageButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    performSearch(currentPage + 1);
+                    window.scrollTo(0, 0);
+                }
+            });
+
+            setupMobileMenu();
+
+            function performSearch(page) {
+                const query = searchInput.value.trim();
+                const type = typeFilter.value;
+                const status = statusFilter.value;
+                const rating = ratingFilter.value;
+                const order = orderFilter.value;
+
+                let url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw&page=${page}`;
+
+                if (type) url += `&type=${type}`;
+                if (status) url += `&status=${status}`;
+                if (rating) url += `&rating=${rating}`;
+                if (order) url += `&order_by=${order}&sort=desc`;
+
+                fetchAnimeResults(url);
+            }
+
+            function fetchAnimeResults(url) {
+                resultsContainer.innerHTML = 'Searching...';
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayResults(data.data);
+                        updatePagination(data.pagination);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching anime results:', error);
+                        resultsContainer.innerHTML = 'An error occurred while fetching results.';
+                    });
             }
 
             function displayResults(animeList) {
+                resultsContainer.innerHTML = '';
+                if (animeList.length === 0) {
+                    resultsContainer.innerHTML = 'No results found.';
+                    return;
+                }
+
                 animeList.forEach(anime => {
                     const animeCard = document.createElement('div');
                     animeCard.className = 'anime-card';
                     animeCard.innerHTML = `
-                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-                        <div class="anime-card-info">
-                            <h3>${anime.title}</h3>
-                            <p>Type: ${anime.type}</p>
-                            <p>Episodes: ${anime.episodes || 'N/A'}</p>
-                            <p>Status: ${anime.status}</p>
+                        <img src="${anime.images.jpg.image_url}" alt="${anime.title} cover" class="anime-cover">
+                        <div class="anime-info">
+                            <div class="anime-title">${anime.title}</div>
+                            <div class="anime-details">
+                                <p>Type: ${anime.type}</p>
+                                <p>Episodes: ${anime.episodes || 'N/A'}</p>
+                                <p>Score: ${anime.score || 'N/A'}</p>
+                                <p>Status: ${anime.status}</p>
+                            </div>
                         </div>
                     `;
                     animeCard.addEventListener('click', () => {
                         window.location.href = `https://animeawesome.com/anime/anime?id=${anime.mal_id}`;
                     });
                     resultsContainer.appendChild(animeCard);
+                });
+            }
+
+            function updatePagination(pagination) {
+                currentPage = pagination.current_page;
+                totalPages = pagination.last_visible_page;
+
+                currentPageSpan.textContent = currentPage;
+                totalPagesSpan.textContent = totalPages;
+
+                prevPageButton.disabled = currentPage === 1;
+                nextPageButton.disabled = currentPage === totalPages;
+            }
+
+            function setupMobileMenu() {
+                const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+                const nav = document.querySelector('nav');
+
+                mobileMenuBtn.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                });
+
+                // Close menu when clicking a link
+                const navLinks = nav.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        nav.classList.remove('active');
+                    });
                 });
             }
         });
