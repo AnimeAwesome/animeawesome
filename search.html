@@ -257,7 +257,7 @@
             </div>
             <div class="filter-row">
                 <label>
-                    <input type="radio" name="search-mode" value="original" checked> Original Search
+                    <input type="radio" name="search-mode" value="normal" checked> Normal Search
                 </label>
                 <label>
                     <input type="radio" name="search-mode" value="ai"> AI-Powered Search
@@ -305,7 +305,7 @@
             // Event listener to change placeholder text based on selected search mode
             searchModeRadios.forEach(radio => {
                 radio.addEventListener('change', function () {
-                    if (this.value === 'original') {
+                    if (this.value === 'normal') {
                         searchInput.placeholder = "Search for anime...";
                     } else if (this.value === 'ai') {
                         searchInput.placeholder = "Describe the anime...";
@@ -335,7 +335,7 @@
                         return radio.value;
                     }
                 }
-                return 'original';
+                return 'normal';
             }
 
             function performSearch(page) {
@@ -349,14 +349,14 @@
 
                 resultsContainer.innerHTML = 'Searching...';
 
-                if (selectedSearchMode === 'original') {
-                    performOriginalSearch(query, page);
+                if (selectedSearchMode === 'normal') {
+                    performNormalSearch(query, page);
                 } else {
                     performAISearch(query);
                 }
             }
 
-            function performOriginalSearch(query, page) {
+            function performNormalSearch(query, page) {
                 const type = typeFilter.value;
                 const status = statusFilter.value;
                 const rating = ratingFilter.value;
