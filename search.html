@@ -278,7 +278,7 @@
         <p>&copy; 2023 AnimeAwesome. All rights reserved.</p>
     </footer>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('search-input');
             const searchButton = document.getElementById('search-button');
             const resultsContainer = document.getElementById('results-container');
@@ -296,10 +296,21 @@
             let totalPages = 1;
 
             searchButton.addEventListener('click', () => performSearch(1));
-            searchInput.addEventListener('keypress', function(e) {
+            searchInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     performSearch(1);
                 }
+            });
+
+            // Event listener to change placeholder text based on selected search mode
+            searchModeRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === 'original') {
+                        searchInput.placeholder = "Search for anime...";
+                    } else if (this.value === 'ai') {
+                        searchInput.placeholder = "Describe the anime...";
+                    }
+                });
             });
 
             prevPageButton.addEventListener('click', () => {
@@ -436,17 +447,17 @@
                     const animeCard = document.createElement('div');
                     animeCard.className = 'anime-card';
                     animeCard.innerHTML = `
-                        <img src="${anime.images.jpg.image_url}" alt="${anime.title} cover" class="anime-cover">
-                        <div class="anime-info">
-                            <div class="anime-title">${anime.title}</div>
-                            <div class="anime-details">
-                                <p>Type: ${anime.type}</p>
-                                <p>Episodes: ${anime.episodes || 'N/A'}</p>
-                                <p>Score: ${anime.score || 'N/A'}</p>
-                                <p>Status: ${anime.status}</p>
-                            </div>
-                        </div>
-                    `;
+                <img src="${anime.images.jpg.image_url}" alt="${anime.title} cover" class="anime-cover">
+                <div class="anime-info">
+                    <div class="anime-title">${anime.title}</div>
+                    <div class="anime-details">
+                        <p>Type: ${anime.type}</p>
+                        <p>Episodes: ${anime.episodes || 'N/A'}</p>
+                        <p>Score: ${anime.score || 'N/A'}</p>
+                        <p>Status: ${anime.status}</p>
+                    </div>
+                </div>
+            `;
                     animeCard.addEventListener('click', () => {
                         window.location.href = `https://animeawesome.com/anime/anime?id=${anime.mal_id}`;
                     });
