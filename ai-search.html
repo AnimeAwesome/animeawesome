@@ -1,0 +1,289 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeAwesome - AI-Powered Anime Search</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #ff6b6b;
+            color: #0a0a0a;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.5);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            background-color: #1a1a1a;
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ff6b6b;
+        }
+
+        .search-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .search-input {
+            width: 70%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 25px;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        .search-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: #ff6b6b;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .search-button:hover {
+            background-color: #ff8c8c;
+        }
+
+        .results-container {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .anime-card {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .anime-card .title {
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .anime-card .match {
+            padding: 5px 10px;
+            background-color: #ff6b6b;
+            color: #0a0a0a;
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        footer {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        .loading::after {
+            content: '...';
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>AnimeAwesome</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="https://animeawesome.com/">Home</a></li>
+            <li><a href="https://animeawesome.com/genres">Genres</a></li>
+            <li><a href="https://animeawesome.com/search">Search</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input"
+                placeholder="Describe the anime you're looking for...">
+            <button id="search-button" class="search-button">Search</button>
+        </div>
+        <div id="loading" class="loading" style="display: none;">Searching for your perfect anime match</div>
+        <div id="results-container" class="results-container"></div>
+    </div>
+    <footer>
+        <p>&copy; 2023 AnimeAwesome. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('search-button').addEventListener('click', performSearch);
+        });
+
+        async function performSearch() {
+            const searchInput = document.getElementById('search-input').value;
+            if (!searchInput.trim()) {
+                alert('Please enter details about the anime.');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results-container').innerHTML = '';
+
+            try {
+                const response = await fetch('http://3.144.226.190:3000/api/chat', {  // Replace with your actual domain
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input: searchInput }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('No response from GPT');
+                }
+
+                const data = await response.json();
+                const animeTitles = data.titles;
+
+                if (animeTitles && animeTitles.length > 0) {
+                    console.log(`Fetching anime details for titles: ${animeTitles}`);
+
+                    const animeDetails = [];
+                    for (let i = 0; i < animeTitles.length; i++) {
+                        const title = animeTitles[i];
+                        try {
+                            console.log(`Fetching details for: ${title}`);
+                            const animeResponse = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`);
+                            const animeData = await animeResponse.json();
+                            if (animeData.data && animeData.data.length > 0) {
+                                animeDetails.push(animeData.data[0]);
+                            } else {
+                                console.warn(`No data found for title: ${title}`);
+                            }
+                        } catch (error) {
+                            console.error(`Error fetching data for title: ${title}`, error);
+                        }
+                        // Throttle requests by waiting 500ms before the next request
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+
+                    if (animeDetails.length > 0) {
+                        displayResults(animeDetails);
+                    } else {
+                        document.getElementById('results-container').innerHTML = '<p>No matches found. Please try another search term.</p>';
+                    }
+                } else {
+                    alert('No valid titles returned. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error performing search:', error);
+                alert('No response from GPT. Please try again.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            container.innerHTML = '';
+
+            results.forEach(anime => {
+                const animeCard = document.createElement('div');
+                animeCard.className = 'anime-card';
+                animeCard.innerHTML = `
+            <img src="${anime.images.jpg.image_url}" alt="${anime.title}" width="200" height="300">
+            <div class="title">${anime.title}</div>
+        `;
+                container.appendChild(animeCard);
+            });
+
+            if (results.length < 5) {
+                console.warn(`Only ${results.length} out of 5 anime were successfully fetched and displayed.`);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
